@@ -23,7 +23,10 @@ import {
   Mail,
   Phone,
   Cloud,
-  Lock
+  Lock,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUp
 } from "lucide-react";
 import AuthModal from "@/components/AuthModal";
 
@@ -258,7 +261,9 @@ export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
 
-  // Monitor Scroll for Navbar Glassmorphism
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Monitor Scroll for Navbar Glassmorphism & Floating Scroll Top Button
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -266,10 +271,23 @@ export default function Home() {
       } else {
         setIsScrolled(false);
       }
+
+      if (window.scrollY > 250) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
 
   // Watermark SVG measurement effect for Kresna Footer
   useEffect(() => {
@@ -456,23 +474,59 @@ export default function Home() {
     }
   ];
 
-  // Hero Section: Carousel State
-  const heroCarouselImages = [
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80",
+  // Hero Section: Swipable 4-Image Carousel State (High-Res Ultra Sharp 1920x1080)
+  const heroSlides = [
+    {
+      id: 1,
+      image: "/office-bg.jpg?v=10",
+      title: "Clarity Headquarters",
+      category: "Enterprise Lobby & Executive Suite",
+      badge: "01 / 04 • ENTERPRISE HQ"
+    },
+    {
+      id: 2,
+      image: "/carousel-1.png?v=10",
+      title: "Executive Tech Strategy",
+      category: "Architecture & Cloud Planning",
+      badge: "02 / 04 • STRATEGY & GOVERNANCE"
+    },
+    {
+      id: 3,
+      image: "/carousel-2.png?v=10",
+      title: "Software Engineering Hub",
+      category: "Full-Stack & DevOps Experts",
+      badge: "03 / 04 • AGILE DEVELOPMENT"
+    },
+    {
+      id: 4,
+      image: "/carousel-3.png?v=10",
+      title: "Modern Tech Workstations",
+      category: "High-Performance Infrastructure",
+      badge: "04 / 04 • WORKSPACE & INNOVATION"
+    }
   ];
 
   const [activeSlide, setActiveSlide] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(1);
+  const [isAutoPlayPaused, setIsAutoPlayPaused] = useState(false);
+
+  const paginate = (newDirection) => {
+    setSlideDirection(newDirection);
+    setActiveSlide((prev) => (prev + newDirection + heroSlides.length) % heroSlides.length);
+  };
 
   useEffect(() => {
+    if (isAutoPlayPaused) return;
     const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % heroCarouselImages.length);
-    }, 4000);
+      paginate(1);
+    }, 5000);
     return () => clearInterval(interval);
-  }, [heroCarouselImages.length]);
+  }, [isAutoPlayPaused, activeSlide]);
+
+  const swipeConfidenceThreshold = 10000;
+  const swipePower = (offset, velocity) => {
+    return Math.abs(offset) * velocity;
+  };
 
   // Parallax Scroll Effect for Hero Image
   const { scrollY } = useScroll();
@@ -557,7 +611,7 @@ export default function Home() {
     { id: 2, src: '/carousel-2.png?v=2', label: 'Tech Team' },
     { id: 3, src: '/carousel-3.png?v=2', label: 'Modern Workstation' },
     { id: 4, src: '/carousel-4.png?v=2', label: 'Executive Boardroom' },
-    { id: 5, src: '/office-bg.jpg?v=2', label: 'Office HQ' },
+    { id: 5, src: '/office-bg.jpg?v=4', label: 'Office HQ' },
   ];
 
   useEffect(() => {
@@ -730,35 +784,107 @@ export default function Home() {
 
       <main className="w-full">
 
-        {/* 2. HERO SECTION */}
+        {/* 2. HERO SECTION WITH SWIPABLE 4 IMAGES */}
         <section
           id="home"
-          className="relative pt-28 md:pt-36 pb-20 md:pb-32 overflow-hidden min-h-screen flex items-center text-white"
+          className="relative pt-28 md:pt-36 pb-20 md:pb-32 overflow-hidden min-h-screen flex items-center text-white select-none"
+          onMouseEnter={() => setIsAutoPlayPaused(true)}
+          onMouseLeave={() => setIsAutoPlayPaused(false)}
         >
-          {/* Office Background Image - LIGHTER BLUE SHADE OVERLAY */}
-          <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
-            <img
-              src="/office-bg.jpg?v=3"
-              alt="Clarity InfoTech Office Workspace"
-              className="w-full h-full object-cover object-center"
-            />
-            {/* Full-width Base Vertical Gradient for smooth top & bottom blending */}
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-[#0A0E39]/60 via-transparent to-[#0A0E39]/70 pointer-events-none" />
-            {/* Soft Dark Smoky Scrim Gradient Fade from Right to Left for ultra-clear text legibility */}
-            <div className="absolute inset-y-0 right-0 w-full md:w-4/5 bg-gradient-to-l from-[#0A0E39]/90 via-[#0A0E39]/65 to-transparent pointer-events-none" />
-          </div>
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 items-center w-full relative z-10">
+          {/* Swipable 4-Image Hero Background Slider */}
+          <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+            <AnimatePresence initial={false} custom={slideDirection}>
+              <motion.div
+                key={activeSlide}
+                custom={slideDirection}
+                variants={{
+                  enter: (direction) => ({
+                    x: direction > 0 ? "100%" : "-100%",
+                    opacity: 0,
+                    scale: 1.05
+                  }),
+                  center: {
+                    x: 0,
+                    opacity: 1,
+                    scale: 1,
+                    transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1] }
+                  },
+                  exit: (direction) => ({
+                    x: direction < 0 ? "100%" : "-100%",
+                    opacity: 0,
+                    scale: 0.95,
+                    transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1] }
+                  })
+                }}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(e, { offset, velocity }) => {
+                  const swipe = swipePower(offset.x, velocity.x);
+                  if (swipe < -swipeConfidenceThreshold) {
+                    paginate(1);
+                  } else if (swipe > swipeConfidenceThreshold) {
+                    paginate(-1);
+                  }
+                }}
+                className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
+              >
+                <img
+                  src={heroSlides[activeSlide].image}
+                  alt={heroSlides[activeSlide].title}
+                  className="w-full h-full object-cover object-center pointer-events-none"
+                />
+              </motion.div>
+            </AnimatePresence>
 
-            {/* Left side empty space */}
+            {/* Full-width Base Vertical Gradient for smooth top & bottom blending */}
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-[#0A0E39]/70 via-[#0A0E39]/40 to-[#0A0E39]/80 pointer-events-none z-10" />
+            {/* Soft Dark Smoky Scrim Gradient Fade from Right to Left for text legibility */}
+            <div className="absolute inset-y-0 right-0 w-full md:w-3/5 bg-gradient-to-l from-[#0A0E39]/95 via-[#0A0E39]/75 to-transparent pointer-events-none z-10" />
+          </div>
+
+          {/* Left & Right High-Visibility Brand Blue Navigation Chevron Buttons with Glowing Aura */}
+          <button
+            onClick={() => paginate(-1)}
+            className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#0A0E39]/90 hover:bg-[#2563EB] text-[#38BDF8] hover:text-white border-2 border-[#38BDF8] shadow-[0_0_20px_rgba(56,189,248,0.6),0_0_40px_rgba(37,99,235,0.4)] backdrop-blur-xl hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group"
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft size={28} strokeWidth={2.5} className="text-[#38BDF8] group-hover:text-white transition-all group-hover:-translate-x-0.5 filter drop-shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
+          </button>
+          <button
+            onClick={() => paginate(1)}
+            className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#0A0E39]/90 hover:bg-[#2563EB] text-[#38BDF8] hover:text-white border-2 border-[#38BDF8] shadow-[0_0_20px_rgba(56,189,248,0.6),0_0_40px_rgba(37,99,235,0.4)] backdrop-blur-xl hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group"
+            aria-label="Next Slide"
+          >
+            <ChevronRight size={28} strokeWidth={2.5} className="text-[#38BDF8] group-hover:text-white transition-all group-hover:translate-x-0.5 filter drop-shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
+          </button>
+
+          {/* Hero Content & Dynamic Slide Badge */}
+          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 grid md:grid-cols-2 gap-12 items-center w-full relative z-20">
+            {/* Left side space */}
             <div className="hidden md:block" />
 
-            {/* Right Side Content - Clean Medium Impactful Text (No Box Card) */}
+            {/* Right Side Content */}
             <motion.div
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
               className="flex flex-col items-start text-left max-w-xl md:ml-auto"
             >
+              {/* Dynamic Active Slide Badge */}
+              <motion.div
+                key={`badge-${activeSlide}`}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/30 backdrop-blur-md border border-primary/40 text-xs font-semibold text-sky-300 mb-4 font-mono tracking-wider uppercase shadow-md"
+              >
+                <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
+                {heroSlides[activeSlide].badge}
+              </motion.div>
+
               <motion.h1
                 variants={fadeUpVariant}
                 className="font-extrabold text-3.5xl sm:text-4.5xl lg:text-5xl leading-[1.12] tracking-tight text-white mb-6 drop-shadow-xl font-sans"
@@ -792,7 +918,41 @@ export default function Home() {
                 </a>
               </motion.div>
             </motion.div>
+          </div>
 
+          {/* Bottom Interactive Slide Indicators & Thumbnail Pill Bar */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 sm:gap-3 px-4 py-2.5 rounded-full bg-black/50 backdrop-blur-xl border border-white/20 shadow-2xl">
+            {heroSlides.map((slide, index) => {
+              const isActive = index === activeSlide;
+              return (
+                <button
+                  key={slide.id}
+                  onClick={() => {
+                    setSlideDirection(index > activeSlide ? 1 : -1);
+                    setActiveSlide(index);
+                  }}
+                  className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                    isActive
+                      ? "bg-white text-navy shadow-lg scale-105"
+                      : "text-white/70 hover:text-white hover:bg-white/15"
+                  }`}
+                >
+                  <span className="font-mono">0{index + 1}</span>
+                  {isActive && (
+                    <span className="hidden sm:inline font-sans text-[11px] font-bold tracking-tight">
+                      {slide.title}
+                    </span>
+                  )}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeSlideIndicator"
+                      className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary rounded-full"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </section>
 
@@ -2006,6 +2166,35 @@ export default function Home() {
         onClose={() => setAuthModalOpen(false)}
         initialMode={authMode}
       />
+
+      {/* Floating Brand Blue Scroll To Top Button with Neon Glow Aura Effect */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 20 }}
+            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 flex items-center justify-center group"
+          >
+            {/* Outer Pulsing Glow Aura */}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 via-sky-400 to-indigo-600 animate-ping opacity-35 blur-md pointer-events-none" />
+
+            {/* Ambient Backlight Glow Effect */}
+            <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-600 opacity-80 blur-md group-hover:opacity-100 transition duration-300 animate-pulse pointer-events-none" />
+
+            {/* Glowing Circular Button */}
+            <motion.button
+              whileHover={{ scale: 1.1, translateY: -3 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={scrollToTop}
+              className="relative flex items-center justify-center w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 text-white border-2 border-sky-300/90 shadow-[0_0_25px_rgba(37,99,235,0.85),0_0_50px_rgba(56,189,248,0.6)] transition-all duration-300 cursor-pointer"
+              aria-label="Scroll to top"
+            >
+              <ArrowUp size={26} strokeWidth={2.5} className="transition-transform group-hover:-translate-y-0.5 filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]" />
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
