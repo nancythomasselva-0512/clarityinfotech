@@ -13,10 +13,10 @@ export default function RootLayout({ children }) {
         {children}
         <div id="root"></div>
         <Script
-          src="http://localhost:3000/loader.js"
-          data-api-key="PUB_0CD9B0CABBEA84E27B09"
+          src="https://2all-ai.mccmrfip.in/loader.js"
+          data-api-key="PUB_AE1FF5961D77F77B7229"
           data-domain="clarityinfotech-92hpgpzv5-nancythomas-projects.vercel.app"
-          data-api-url="http://localhost:3000"
+          data-api-url="https://2all-ai.mccmrfip.in"
           strategy="afterInteractive"
         />
       </body>
