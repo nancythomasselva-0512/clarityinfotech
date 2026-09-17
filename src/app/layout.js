@@ -14,8 +14,8 @@ export default function RootLayout({ children }) {
         <div id="root"></div>
         <Script
           src="https://2all-ai.mccmrfip.in/loader.js"
-          data-api-key="PUB_AE1FF5961D77F77B7229"
-          data-domain="clarityinfotech-92hpgpzv5-nancythomas-projects.vercel.app"
+          data-api-key="PUB_DC2027F29BC7AF7EC2BD"
+          data-domain="clarityinfotech.vercel.app"
           data-api-url="https://2all-ai.mccmrfip.in"
           strategy="afterInteractive"
         />
