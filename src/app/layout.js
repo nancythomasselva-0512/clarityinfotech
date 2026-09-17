@@ -14,8 +14,8 @@ export default function RootLayout({ children }) {
         <div id="root"></div>
         <Script
           src="http://localhost:3000/loader.js"
-          data-api-key="PUB_67B32A79924D2EA331A4"
-          data-domain="localhost:3001"
+          data-api-key="PUB_0CD9B0CABBEA84E27B09"
+          data-domain="clarityinfotech-92hpgpzv5-nancythomas-projects.vercel.app"
           data-api-url="http://localhost:3000"
           strategy="afterInteractive"
         />
